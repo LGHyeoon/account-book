@@ -8,7 +8,7 @@ import (
 
 func main() {
 	handler1 := func(w http.ResponseWriter, r *http.Request) {
-		tmp1 := template.Must(template.ParseFiles("html/index.html"))
+		tmp1 := template.Must(template.ParseFiles("resources/views/login.html"))
 		tmp1.Execute(w, nil)
 	}
 
