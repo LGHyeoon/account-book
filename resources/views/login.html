@@ -25,11 +25,14 @@
         loginForm.addEventListener("submit", function (e) {
             e.preventDefault();
 
-            const userId = loginForm.userId.value;
-            const userPwd = loginForm.userPwd.value;
+            const formData = new FormData(loginForm);
 
-            console.log("아이디 : " + userId);
-            console.log("비밀번호 : " + userPwd);
+            fetch("/login", {
+                method: "POST",
+                body: formData,
+            }).then(res => {
+
+            });
         });
     </script>
 </body>
