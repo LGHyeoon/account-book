@@ -16,24 +16,33 @@
             <label>비밀번호</label>
             <input id="userPwd" name="userPwd" type="password" placeholder="비밀번호를 입력해주세요." />
         </div>
-        <button id="loginBtn" name="loginBtn" type="submit">로그인</button>
+
+        <button id="loginBtn" name="loginBtn" type="button" onclick="doLogin()">로그인</button>
+        <button id="goRegBtn" name="goRegBtn" type="button" onclick="goReg()">회원가입하러 가기</button>
     </form>
 
     <script type="text/javascript">
-        const loginForm = document.getElementById("loginForm");
+        // 실제 로그인 수행
+        function doLogin() {
+            const loginForm = document.getElementById("loginForm");
+            const userId = document.getElementById("userId");
+            const userPwd = document.getElementById("userPwd");
 
-        loginForm.addEventListener("submit", function (e) {
-            e.preventDefault();
+            const formData = {
+                userId: userId.value,
+                userPwd: userPwd.value,
+            };
 
-            const formData = new FormData(loginForm);
-
-            fetch("/login", {
+            fetch("/doLogin", {
                 method: "POST",
-                body: formData,
-            }).then(res => {
-
+                body: JSON.stringify(formData),
             });
-        });
+        }
+
+        // 회원가입 페이지로 이동
+        function goReg() {
+            location.href = "/register";
+        }
     </script>
 </body>
 </html>
