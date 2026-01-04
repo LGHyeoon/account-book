@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+	dbConnect()
+
 	// Handler 선언
 	loginViewHandler := func(w http.ResponseWriter, r *http.Request) {
 		tmp1 := template.Must(template.ParseFiles("resources/views/login.html"))
