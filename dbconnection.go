@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	// 이를 선언하지 않으면 unknown driver 오류가 발생한다.
 	_ "github.com/lib/pq"
 )
 
@@ -21,7 +22,8 @@ func checkError(err error) {
 	}
 }
 
-func dbConnect() {
+func DbConnect() *sql.DB {
+	// 5개의 설정을 다 해줘야 정상적으로 연결이 가능하다.
 	var connectionstring string = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", HOST, PORT, USER, PASSWORD, DATABASE)
 
 	db, err := sql.Open("postgres", connectionstring)
@@ -31,18 +33,5 @@ func dbConnect() {
 	checkError(err)
 	fmt.Println("DB 연결 성공")
 
-	_, err = db.Exec("DROP TABLE IF EXISTS TEST_DB")
-	checkError(err)
-	fmt.Println("테스트 DB 삭제 완료")
-
-	_, err = db.Exec("CREATE TABLE TEST_DB (id serial PRIMARY KEY, name VARCHAR(50));")
-	checkError(err)
-	fmt.Println("테스트 DB 생성 완료")
-
-	sql_statement := "INSERT INTO TEST_DB (name) VALUES ($1)"
-	_, err = db.Exec(sql_statement, "이기현")
-	checkError(err)
-	_, err = db.Exec(sql_statement, "이종혁")
-	checkError(err)
-	fmt.Println("데이터 2개 INSERT 완료")
+	return db
 }
