@@ -9,7 +9,9 @@ import (
 )
 
 func main() {
-	dbConnect()
+	// DB 연결
+	con := DbConnect()
+	defer con.Close()
 
 	// Handler 선언
 	loginViewHandler := func(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +30,22 @@ func main() {
 		userId := keyVal["userId"]
 		userPwd := keyVal["userPwd"]
 
+		var cnt int
+		rows, err := con.Query("SELECT COUNT(*) as cnt FROM TB_USER WHERE user_id = $1", userId)
+
+		// 쿼리문 오류 검증 로직
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for rows.Next() {
+			if err := rows.Scan(&cnt); err != nil {
+				log.Fatal(err)
+			}
+		}
+
 		log.Print(userId + " / " + userPwd)
+		log.Print(cnt)
 	}
 
 	regViewHandler := func(w http.ResponseWriter, r *http.Request) {
