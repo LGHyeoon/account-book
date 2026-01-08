@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
     <title>가계부 프로그램</title>
 </head>
 <body>
-    <form id="loginForm">
+    <form hx-post="/doLogin" hx-target="#loginMsg" hx-swap="innerHTML">
         <h1>로그인</h1>
         <div>
             <label>아이디</label>
@@ -17,8 +18,9 @@
             <input id="userPwd" name="userPwd" type="password" placeholder="비밀번호를 입력해주세요." />
         </div>
 
-        <button id="loginBtn" name="loginBtn" type="button" onclick="doLogin()">로그인</button>
-        <button id="goRegBtn" name="goRegBtn" type="button" onclick="goReg()">회원가입하러 가기</button>
+        <div id="loginMsg"></div>
+
+        <button>로그인</button>
     </form>
 
     <script type="text/javascript">
