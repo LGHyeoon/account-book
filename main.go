@@ -1,7 +1,9 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -30,22 +32,32 @@ func main() {
 		userId := keyVal["userId"]
 		userPwd := keyVal["userPwd"]
 
-		var cnt int
-		rows, err := con.Query("SELECT COUNT(*) as cnt FROM TB_USER WHERE user_id = $1", userId)
+		var dbPwd string
+
+		err := con.QueryRow("SELECT user_pwd FROM tb_user WHERE user_id = $1", userId).Scan(&dbPwd)
+
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+			fmt.Fprint(w, `<p style="color: red;">존재하지 않는 계정입니다.</p>`)
+			return
+		}
 
 		// 쿼리문 오류 검증 로직
 		if err != nil {
-			log.Fatal(err)
+			http.Error(w, "db error", http.StatusInternalServerError)
+			return
 		}
 
-		for rows.Next() {
-			if err := rows.Scan(&cnt); err != nil {
-				log.Fatal(err)
-			}
+		if userPwd != dbPwd {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+			fmt.Fprint(w, `<p style="color: red;">비밀번호가 올바르지 않습니다.</p>`)
+			return
 		}
 
-		log.Print(userId + " / " + userPwd)
-		log.Print(cnt)
+		w.WriteHeader(http.StatusNoContent) // 204
+		fmt.Fprint(w, `<p style="color: blue;">로그인 성공.</p>`)
 	}
 
 	regViewHandler := func(w http.ResponseWriter, r *http.Request) {
