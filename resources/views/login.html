@@ -22,29 +22,5 @@
 
         <button>로그인</button>
     </form>
-
-    <script type="text/javascript">
-        // 실제 로그인 수행
-        function doLogin() {
-            const loginForm = document.getElementById("loginForm");
-            const userId = document.getElementById("userId");
-            const userPwd = document.getElementById("userPwd");
-
-            const formData = {
-                userId: userId.value,
-                userPwd: userPwd.value,
-            };
-
-            fetch("/doLogin", {
-                method: "POST",
-                body: JSON.stringify(formData),
-            });
-        }
-
-        // 회원가입 페이지로 이동
-        function goReg() {
-            location.href = "/register";
-        }
-    </script>
 </body>
 </html>
