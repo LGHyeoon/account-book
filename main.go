@@ -2,9 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
-	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"text/template"
@@ -22,42 +19,36 @@ func main() {
 	}
 
 	loginHandler := func(w http.ResponseWriter, r *http.Request) {
-		// 260103 내용
-		// 프론트에서 JSON으로 값을 넘길 경우에는 아래와 같이 unmarshal 처리를 해서 데이터를 가져와야한다. (기존의 ioutil.ReadAll은 deprecated 됨)
-		// 그 외의 경우로 프론트에서 FormData API를 통해 넘길 경우에는 r.PostFormValue("데이터명") 으로 가져온다.
-		body, _ := io.ReadAll(r.Body)
-		keyVal := make(map[string]string)
-		json.Unmarshal(body, &keyVal)
-
-		userId := keyVal["userId"]
-		userPwd := keyVal["userPwd"]
+		userId := r.PostFormValue("userId")
+		userPwd := r.PostFormValue("userPwd")
 
 		var dbPwd string
 
 		err := con.QueryRow("SELECT user_pwd FROM tb_user WHERE user_id = $1", userId).Scan(&dbPwd)
 
+		log.Print("입력한 아아디: " + userId)
+		log.Print("입력한 비밀번호: " + userPwd)
+
 		if err == sql.ErrNoRows {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Header().Set("Content-Type", "text/html; charset=UTF-8")
-			fmt.Fprint(w, `<p style="color: red;">존재하지 않는 계정입니다.</p>`)
+			htmlStr := "<p style='color: red;'>해당하는 아이디의 계정이 존재하지 않습니다.</p>"
+			tmp1, _ := template.New("t").Parse(htmlStr)
+			tmp1.Execute(w, nil)
 			return
 		}
 
 		// 쿼리문 오류 검증 로직
-		if err != nil {
-			http.Error(w, "db error", http.StatusInternalServerError)
-			return
-		}
+		checkError(err)
 
 		if userPwd != dbPwd {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Header().Set("Content-Type", "text/html; charset=UTF-8")
-			fmt.Fprint(w, `<p style="color: red;">비밀번호가 올바르지 않습니다.</p>`)
+			htmlStr := "<p style='color: red;'>비밀번호가 올바르지 않습니다.</p>"
+			tmp1, _ := template.New("t").Parse(htmlStr)
+			tmp1.Execute(w, nil)
 			return
 		}
 
-		w.WriteHeader(http.StatusNoContent) // 204
-		fmt.Fprint(w, `<p style="color: blue;">로그인 성공.</p>`)
+		htmlStr := "<p style='color: blue;'>로그인 성공.</p>"
+		tmp1, _ := template.New("t").Parse(htmlStr)
+		tmp1.Execute(w, nil)
 	}
 
 	regViewHandler := func(w http.ResponseWriter, r *http.Request) {
