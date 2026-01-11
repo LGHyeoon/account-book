@@ -7,20 +7,23 @@
     <title>가계부 프로그램</title>
 </head>
 <body>
-    <form hx-post="/doLogin" hx-target="#loginMsg" hx-swap="innerHTML">
-        <h1>로그인</h1>
-        <div>
-            <label>아이디</label>
-            <input id="userId" name="userId" type="text" placeholder="아이디를 입력해주세요." />
-        </div>
-        <div>
-            <label>비밀번호</label>
-            <input id="userPwd" name="userPwd" type="password" placeholder="비밀번호를 입력해주세요." />
-        </div>
+    <div id="main">
+            <form hx-post="/doLogin" hx-target="#loginMsg" hx-swap="innerHTML">
+            <h1>로그인</h1>
+            <div>
+                <label>아이디</label>
+                <input id="userId" name="userId" type="text" placeholder="아이디를 입력해주세요." />
+            </div>
+            <div>
+                <label>비밀번호</label>
+                <input id="userPwd" name="userPwd" type="password" placeholder="비밀번호를 입력해주세요." />
+            </div>
 
-        <div id="loginMsg"></div>
+            <div id="loginMsg"></div>
 
-        <button>로그인</button>
-    </form>
+            <button>로그인</button>
+            <button hx-get="/register" hx-target="#main" hx-swap="innerHTML" hx-push-url="true">회원가입하러 가기</button>
+        </form>
+    </div>
 </body>
 </html>
