@@ -56,10 +56,33 @@ func main() {
 		tmp.Execute(w, nil)
 	}
 
+	registerHandler := func(w http.ResponseWriter, r *http.Request) {
+		userId := r.PostFormValue("userId")
+		userPwd := r.PostFormValue("userPwd")
+		userNm := r.PostFormValue("userNm")
+
+		var dbUserId string
+
+		err := con.QueryRow("SELECT * FROM tb_user WHERE user_id = $1", userId).Scan(&dbUserId)
+
+		if err != sql.ErrNoRows {
+			htmlStr := "<p style='color: red;'>해당하는 아이디의 계정이 이미 존재합니다.</p>"
+			tmp1, _ := template.New("t").Parse(htmlStr)
+			tmp1.Execute(w, nil)
+			return
+		}
+
+		_, err = con.Exec("INSERT INTO tb_user (user_id, user_pwd, user_nm) VALUES ($1, $2, $3);", userId, userPwd, userNm)
+
+		tmp := template.Must(template.ParseFiles("resources/views/main.html"))
+		tmp.Execute(w, nil)
+	}
+
 	// 매핑
 	http.HandleFunc("/", loginViewHandler)
 	http.HandleFunc("/doLogin", loginHandler)
 	http.HandleFunc("/register", regViewHandler)
+	http.HandleFunc("/doRegister", registerHandler)
 
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
